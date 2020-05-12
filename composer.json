@@ -1,25 +1,28 @@
 {
-    "name": "funsoul/funcompare",
+    "name": "wxb/funcompare",
     "description": "A tool compare text differences",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "funsoul",
-            "email": "cyanming2016@gmail.com"
-        }
-    ],
+    "authors": [{
+        "name": "wxb",
+        "email": "wxb0328@icloud.com"
+    }],
     "keywords": [
         "text",
+        "json",
         "compare",
         "difference"
     ],
-    "homepage": "https://github.com/funsoul/funcompare",
+    "homepage": "https://github.com/wxb/funcompare",
     "require": {
-        "php": ">=5.3"
+        "php": ">=5.4"
     },
     "autoload": {
         "psr-4": {
-            "Funsoul\\Funcompare\\": "src/"
+            "Wxb\\Funcompare\\": "src/",
+            "Wxb\\Tests\\": "tests/"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.1"
     }
 }

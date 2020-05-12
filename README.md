@@ -2,17 +2,22 @@ funcompare
 ==========
 A tool compare text differences
 
+# 声明
+   *  1. 本工具Fork自 https://github.com/funsoul/funcompare
+   *  2. 在原工具基础上修改BUG并添加单元测试后输出
+   *  3. 由于原作者已不再更新，本人fork后准备长期补充、支持和优化，遂形成本库：https://github.com/wxb/funcompare
+
 # Installation
 
 ```
-composer require "funsoul/funcompare: ~1.1"
+composer require "wxb/funcompare"
 ```
 
 # Usage
 
 ### compareText()
 ```php
-use Funsoul\Funcompare\Funcompare;
+use Wxb\Funcompare\Funcompare;
 
 $old = 'A tool compare text differences is funny';
 $new = 'A tool that compare text differences';
@@ -24,18 +29,20 @@ echo $res;
 // A tool <span class="new-word">that</span> compare text differences <span class="old-word">is</span> <span class="old-word">funny</span>
 
 ```
+
 ### compareJson()
 ```php
-use Funsoul\Funcompare\Funcompare;
+use Wxb\Funcompare\Funcompare;
 
-$old = '[{"id":1,"name":"xxx","age":18,"cart":[{"id":100,"name":"rice"}]},{"id":2,"name":"aaa","age":18}]';
-$new = '[{"id":1,"name":"yyy","age":20,"cart":[{"id":100,"name":"banana"}]},{"id":2,"name":"bbb","age":18}]';
+$old = '[{"id":1,"name":"xxx","age":18,"cart":[{"id":100,"name":"rice->你"}], "sex":"男/0"},{"id":2,"name":"aaa","age":18}]';
+$new = '[{"id":1,"name":"yyy","age":20,"cart":[{"id":100,"name":"banana/我"}], "sex":1, "address":{"provice":"陕西省","city":"宝鸡市"}},{"id":2,"name":"bbb","age":18}]';
+
 
 $fc = new Funcompare();
 $res = $fc->compareJson($old, $new);
 echo $res
 
-// [{"name":{"old":"<span class=\"old-word\">xxx</span>","new":"<span class=\"new-word\">yyy</span>"},"age":{"old":"<span class=\"old-word\">18</span>","new":"<span class=\"new-word\">20</span>"},"cart":[{"name":{"old":"<span class=\"old-word\">rice</span>","new":"<span class=\"new-word\">banana</span>"}}]},{"name":{"old":"<span class=\"old-word\">aaa</span>","new":"<span class=\"new-word\">bbb</span>"}}]
+// [{"name":{"old":"<span class=\"old-word\">\"xxx\"</span>","new":"<span class=\"old-word\">\"yyy\"</span>"},"age":{"old":"<span class=\"old-word\">18</span>","new":"<span class=\"old-word\">20</span>"},"cart":[{"name":{"old":"<span class=\"old-word\">\"rice->你\"</span>","new":"<span class=\"old-word\">\"banana/我\"</span>"}}],"sex":{"old":"<span class=\"old-word\">\"男/0\"</span>","new":"<span class=\"old-word\">1</span>"},"address":{"old":null,"new":"<span class=\"old-word\">{\"provice\":\"陕西省\",\"city\":\"宝鸡市\"}</span>"}},{"name":{"old":"<span class=\"old-word\">\"aaa\"</span>","new":"<span class=\"old-word\">\"bbb\"</span>"}}]
 
 ```
 
@@ -43,26 +50,34 @@ echo $res
 [
     {
         "name":{
-            "old":"<span class="old-word">xxx</span>",
-            "new":"<span class="new-word">yyy</span>"
+            "old":"<span class="old-word">"xxx"</span>",
+            "new":"<span class="old-word">"yyy"</span>"
         },
         "age":{
             "old":"<span class="old-word">18</span>",
-            "new":"<span class="new-word">20</span>"
+            "new":"<span class="old-word">20</span>"
         },
         "cart":[
             {
                 "name":{
-                    "old":"<span class="old-word">rice</span>",
-                    "new":"<span class="new-word">banana</span>"
+                    "old":"<span class="old-word">"rice->你"</span>",
+                    "new":"<span class="old-word">"banana/我"</span>"
                 }
             }
-        ]
+        ],
+        "sex":{
+            "old":"<span class="old-word">"男/0"</span>",
+            "new":"<span class="old-word">1</span>"
+        },
+        "address":{
+            "old":null,
+            "new":"<span class="old-word">{"provice":"陕西省","city":"宝鸡市"}</span>"
+        }
     },
     {
         "name":{
-            "old":"<span class="old-word">aaa</span>",
-            "new":"<span class="new-word">bbb</span>"
+            "old":"<span class="old-word">"aaa"</span>",
+            "new":"<span class="old-word">"bbb"</span>"
         }
     }
 ]
