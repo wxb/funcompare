@@ -15,7 +15,7 @@ composer require "wxb/funcompare"
 
 # Usage
 
-### compareText()
+### compareText($oldString, $newString)
 ```php
 use Wxb\Funcompare\Funcompare;
 
@@ -26,11 +26,82 @@ $fc = new Funcompare();
 $res = $fc->compareText($old, $new);
 echo $res;
 
-// A tool <span class="new-word">that</span> compare text differences <span class="old-word">is</span> <span class="old-word">funny</span>
+// A tool <new:that> compare text differences <old:is> <old:funny>
 
 ```
 
-### compareJson()
+
+### compareArray($oldArr, $newArr)
+```php
+use Wxb\Funcompare\Funcompare;
+
+$old = [
+    ["id" => 1, "name" => "xxx", "age" => 18, "cart" => [["id" => 100, "name" => "rice->你"]], "sex" => "男/0"],
+    ["id" => 2, "name" => "aaa", "age" => 18],
+];
+$new = [
+    ["id" => 1, "name" => "yyy", "age" => 20, "cart" => [["id" => 100, "name" => "banana/我"]], "sex" => 1, "address" => ["provice" => "陕西省", "city" => "宝鸡市"]],
+    ["id" => 2, "name" => "bbb", "age" => 18],
+];
+
+$fc = new Funcompare();
+$res = $fc->compareArray($old, $new);
+var_export($res);
+
+/*
+array (
+  0 => 
+  array (
+    'name' => 
+    array (
+      'old' => 'xxx',
+      'new' => 'yyy',
+    ),
+    'age' => 
+    array (
+      'old' => 18,
+      'new' => 20,
+    ),
+    'cart' => 
+    array (
+      0 => 
+      array (
+        'name' => 
+        array (
+          'old' => 'rice->你',
+          'new' => 'banana/我',
+        ),
+      ),
+    ),
+    'sex' => 
+    array (
+      'old' => '男/0',
+      'new' => 1,
+    ),
+    'address' => 
+    array (
+      'old' => NULL,
+      'new' => 
+      array (
+        'provice' => '陕西省',
+        'city' => '宝鸡市',
+      ),
+    ),
+  ),
+  1 => 
+  array (
+    'name' => 
+    array (
+      'old' => 'aaa',
+      'new' => 'bbb',
+    ),
+  ),
+)
+*/
+```
+
+
+### compareJson($oldJson, $newJson)
 ```php
 use Wxb\Funcompare\Funcompare;
 
@@ -42,7 +113,7 @@ $fc = new Funcompare();
 $res = $fc->compareJson($old, $new);
 echo $res
 
-// [{"name":{"old":"<span class=\"old-word\">\"xxx\"</span>","new":"<span class=\"old-word\">\"yyy\"</span>"},"age":{"old":"<span class=\"old-word\">18</span>","new":"<span class=\"old-word\">20</span>"},"cart":[{"name":{"old":"<span class=\"old-word\">\"rice->你\"</span>","new":"<span class=\"old-word\">\"banana/我\"</span>"}}],"sex":{"old":"<span class=\"old-word\">\"男/0\"</span>","new":"<span class=\"old-word\">1</span>"},"address":{"old":null,"new":"<span class=\"old-word\">{\"provice\":\"陕西省\",\"city\":\"宝鸡市\"}</span>"}},{"name":{"old":"<span class=\"old-word\">\"aaa\"</span>","new":"<span class=\"old-word\">\"bbb\"</span>"}}]
+// [{"name":{"old":"xxx","new":"yyy"},"age":{"old":18,"new":20},"cart":[{"name":{"old":"rice->你","new":"banana/我"}}],"sex":{"old":"男/0","new":1},"address":{"old":null,"new":{"provice":"陕西省","city":"宝鸡市"}}},{"name":{"old":"aaa","new":"bbb"}}]
 
 ```
 
@@ -50,73 +121,56 @@ echo $res
 [
     {
         "name":{
-            "old":"<span class="old-word">"xxx"</span>",
-            "new":"<span class="old-word">"yyy"</span>"
+            "old":"xxx",
+            "new":"yyy"
         },
         "age":{
-            "old":"<span class="old-word">18</span>",
-            "new":"<span class="old-word">20</span>"
+            "old":18,
+            "new":20
         },
         "cart":[
             {
                 "name":{
-                    "old":"<span class="old-word">"rice->你"</span>",
-                    "new":"<span class="old-word">"banana/我"</span>"
+                    "old":"rice->你",
+                    "new":"banana/我"
                 }
             }
         ],
         "sex":{
-            "old":"<span class="old-word">"男/0"</span>",
-            "new":"<span class="old-word">1</span>"
+            "old":"男/0",
+            "new":1
         },
         "address":{
             "old":null,
-            "new":"<span class="old-word">{"provice":"陕西省","city":"宝鸡市"}</span>"
+            "new":{
+                "provice":"陕西省",
+                "city":"宝鸡市"
+            }
         }
     },
     {
         "name":{
-            "old":"<span class="old-word">"aaa"</span>",
-            "new":"<span class="old-word">"bbb"</span>"
+            "old":"aaa",
+            "new":"bbb"
         }
     }
 ]
 ```
 
-### css
 
-```
-<style>
-    .new-word{background:rgba(245,255,178,1.00)}
-    .new-word:after{content:' '; background:rgba(245,255,178,1.00)}
-    .old-word{text-decoration:none; position:relative}
-    .old-word:after{
-        content: ' ';
-        font-size: inherit;
-        display: block;
-        position: absolute;
-        right: 0;
-        left: 0;
-        top: 55%;
-        bottom: 30%;
-        border-top: 1px solid #000;
-        border-bottom: 1px solid #000;
-    }
-</style>
-```
 
-### wrapper()
+### label($oldLabel, $newLabel)
 ```php
-use Funsoul\Funcompare\Funcompare;
+use Wxb\Funcompare\Funcompare;
 
-$old = 'A tool compare text differences is funny';
-$new = 'A tool that compare text differences';
+$fromA = 'A tool compare text differences is funny';
+$fromB = 'A tool that compare text differences';
 
 $fc = new Funcompare();
-$res = $fc->wrapper('[',']','<','>')->compareText($old, $new);
+$res = $fc->label('a', 'b')->compareText($fromA, $fromB);
 echo $res;
 
-// A tool <that> compare text differences [is] [funny]
+// A tool <b:that> compare text differences <a:is> <a:funny> 
 ```
 
 # License

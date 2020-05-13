@@ -29,37 +29,14 @@ namespace Wxb\Funcompare;
 
 class Funcompare
 {
-    private $_old_l_wrapper = '<span class="old-word">';
-    private $_old_r_wrapper = '</span>';
-    private $_new_l_wrapper = '<span class="new-word">';
-    private $_new_r_wrapper = '</span>';
+    private $_oldLabel = 'old';
+    private $_newLabel = 'new';
 
-    private function diffArray($array1, $array2)
+    public function label($oldLabel, $newLabel)
     {
-        $result = array();
-
-        $keys = array_unique(array_merge(array_keys((array) $array1), array_keys($array2)));
-        foreach ($keys as $k) {
-            if (isset($array1[$k]) && isset($array2[$k])) {
-                if (is_array($array1[$k]) && is_array($array2[$k])) {
-                    $tmp = $this->diffArray($array1[$k], $array2[$k]);
-                    if ($tmp) {
-                        $result[$k] = $tmp;
-                    }
-                } elseif (is_array($array1[$k]) || is_array($array2[$k]) || $array1[$k] != $array2[$k]) {
-                    $result[$k]['old'] = $this->_old_l_wrapper . json_encode($array1[$k], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . $this->_old_r_wrapper;
-                    $result[$k]['new'] = $this->_old_l_wrapper . json_encode($array2[$k], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . $this->_old_r_wrapper;
-                }
-            } elseif (isset($array1[$k]) && !isset($array2[$k])) {
-                $result[$k]['old'] = $this->_old_l_wrapper . json_encode($array1[$k], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . $this->_old_r_wrapper;
-                $result[$k]['new'] = null;
-            } elseif (!isset($array1[$k]) && isset($array2[$k])) {
-                $result[$k]['old'] = null;
-                $result[$k]['new'] = $this->_old_l_wrapper . json_encode($array2[$k], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . $this->_old_r_wrapper;
-            }
-        }
-
-        return $result;
+        !empty($oldLabel) && $this->_oldLabel = $oldLabel;
+        !empty($newLabel) && $this->_newLabel = $newLabel;
+        return $this;
     }
 
     public function compareText($oldString, $newString)
@@ -83,13 +60,13 @@ class Funcompare
                     $foundKey = array_search($oldArr[$tmpOldIndex], $newArr, true);
                     if ($foundKey != '' && $foundKey > $tmpNewIndex) {
                         for ($p = $tmpNewIndex; $p < $foundKey; $p++) {
-                            array_push($resArr, $this->_new_l_wrapper . $newArr[$p] . $this->_new_r_wrapper);
+                            array_push($resArr, sprintf('<%s:%s>', $this->_newLabel, $newArr[$p]));
                         }
                         array_push($resArr, $oldArr[$tmpOldIndex]);
                         $tmpOldIndex++;
                         $tmpNewIndex = $foundKey + 1;
                     } else {
-                        array_push($resArr, $this->_old_l_wrapper . $oldArr[$tmpOldIndex] . $this->_old_r_wrapper);
+                        array_push($resArr, sprintf('<%s:%s>', $this->_oldLabel, $oldArr[$tmpOldIndex]));
                         $tmpOldIndex++;
                     }
                 }
@@ -105,20 +82,40 @@ class Funcompare
         return $textFinal;
     }
 
+    public function compareArray($oldArr, $newArr)
+    {
+        $result = array();
+
+        $keys = array_unique(array_merge(array_keys((array) $oldArr), array_keys($newArr)));
+        foreach ($keys as $k) {
+            if (isset($oldArr[$k]) && isset($newArr[$k])) {
+                if (is_array($oldArr[$k]) && is_array($newArr[$k])) {
+                    $tmp = $this->compareArray($oldArr[$k], $newArr[$k]);
+                    if ($tmp) {
+                        $result[$k] = $tmp;
+                    }
+                } elseif (is_array($oldArr[$k]) || is_array($newArr[$k]) || $oldArr[$k] != $newArr[$k]) {
+                    $result[$k][$this->_oldLabel] = $oldArr[$k];
+                    $result[$k][$this->_newLabel] = $newArr[$k];
+                }
+            } elseif (isset($oldArr[$k]) && !isset($newArr[$k])) {
+                $result[$k][$this->_oldLabel] = $oldArr[$k];
+                $result[$k][$this->_newLabel] = null;
+            } elseif (!isset($oldArr[$k]) && isset($newArr[$k])) {
+                $result[$k][$this->_oldLabel] = null;
+                $result[$k][$this->_newLabel] = $newArr[$k];
+            }
+        }
+
+        return $result;
+    }
+
     public function compareJson($oldJson, $newJson)
     {
         $oldArr = json_decode($oldJson, true);
         $newArr = json_decode($newJson, true);
-        $res = $this->diffArray($oldArr, $newArr);
+        $res = $this->compareArray($oldArr, $newArr);
         return json_encode($res, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
-    public function wrapper($oldLeftWrapper, $oldRightWrapper, $newLeftWrapper, $newRightWrapper)
-    {
-        $this->_old_l_wrapper = $oldLeftWrapper;
-        $this->_old_r_wrapper = $oldRightWrapper;
-        $this->_new_l_wrapper = $newLeftWrapper;
-        $this->_new_r_wrapper = $newRightWrapper;
-        return $this;
-    }
 }
